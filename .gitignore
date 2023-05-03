@@ -1,5 +1,6 @@
 # Added by Ziyad
-data/
+data/*
+!data/labels.jsonl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
