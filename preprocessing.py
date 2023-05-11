@@ -1,5 +1,5 @@
 import numpy as np
-from skimage import filters, io
+from skimage import filters
 
 
 def singleRetinex(img: np.ndarray, sigma: int) -> np.ndarray:
@@ -51,19 +51,6 @@ def AMSR(img: np.ndarray) -> np.ndarray:
     Y_AMSR = weights[0] * Y + sum(
         [weight * Y_SSR for weight, Y_SSR in zip(weights[1:], Y_SSR)]
     )
-
-    maps = [
-        weights[0] * Y,
-        weights[1] * Y_SSR[0],
-        weights[2] * Y_SSR[1],
-        weights[3] * Y_SSR[2],
-    ]
-
-    i = 0
-    for zeft in maps:
-        zeft = zeft.astype(np.uint8)
-        io.imsave(str(i), zeft, check_contrast=False, quality=100, format="jpg")
-        i += 1
 
     R_reconstructed = (
         1
