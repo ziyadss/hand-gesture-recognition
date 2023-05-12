@@ -7,7 +7,7 @@ import numpy as np
 from skimage import io, transform, color
 from skimage.feature import hog, local_binary_pattern
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
+from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split,KFold
 
 DATA_DIRECTORY = "data"
 MEN_DIRECTORY = os.path.join(DATA_DIRECTORY, "men")
@@ -16,57 +16,57 @@ LABELS_FILENAME = os.path.join(DATA_DIRECTORY, "labels.jsonl")
 
 RANDOM_STATE = 42
 
-N = 100
+N = 1
 
 t_start = time.process_time_ns()
 
 data = []
 labels = []
+import utils
+with open(LABELS_FILENAME, "r") as f:
+    for line in f:
+        entry = json.loads(line.strip())
+        image_path = entry["image_url"]
+        label = entry["label"]
 
-# with open(LABELS_FILENAME, "r") as f:
-#     for line in f:
-#         entry = json.loads(line.strip())
-#         image_path = entry["image_url"]
-#         label = entry["label"]
+        image = utils.segment_hand(image_path)
+        image = transform.rescale(
+            image, 1 / 32, anti_aliasing=True, preserve_range=True
+        )
 
-#         image = io.imread(image_path, as_gray=True) * 255
-#         image = transform.rescale(
-#             image, 1 / 32, anti_aliasing=True, preserve_range=True
-#         )
+        # features = local_binary_pattern(image, 8, 1, method="uniform")
+        # n_bins = int(features.max() + 1)
+        # features, _ = np.histogram(features, bins=n_bins, range=(0, n_bins), density=True)
+        # features = np.zeros((256, 256))
 
-#         # features = local_binary_pattern(image, 8, 1, method="uniform")
-#         # n_bins = int(features.max() + 1)
-#         # features, _ = np.histogram(features, bins=n_bins, range=(0, n_bins), density=True)
-#         # features = np.zeros((256, 256))
+        features = hog(
+            image,
+            orientations=8,
+            pixels_per_cell=(16, 16),
+            cells_per_block=(1, 1),
+            block_norm="L2-Hys",
+            feature_vector=True,
+        )
 
-#         features = hog(
-#             image,
-#             orientations=8,
-#             pixels_per_cell=(16, 16),
-#             cells_per_block=(1, 1),
-#             block_norm="L2-Hys",
-#             feature_vector=True,
-#         )
+        data.append(features)
+        labels.append(label)
 
-#         data.append(features)
-#         labels.append(label)
+with open("data_hog_segmented.pkl", "wb") as f:
+    pickle.dump(data, f)
 
-# with open("data_hog.pkl", "wb") as f:
-#     pickle.dump(data, f)
+# with open("data_hog_segmented.pkl", "rb") as f:
+#     data = pickle.load(f)
 
-with open("data_hog.pkl", "rb") as f:
-    data = pickle.load(f)
+with open("labels.pkl", "wb") as f:
+    pickle.dump(labels, f)
 
-# with open("labels.pkl", "wb") as f:
-#     pickle.dump(labels, f)
+# with open("labels.pkl", "rb") as f:
+#     labels = pickle.load(f)
 
-with open("labels.pkl", "rb") as f:
-    labels = pickle.load(f)
-
-X_train, X_test, y_train, y_test = train_test_split(
-    data, labels, test_size=0.2, random_state=RANDOM_STATE
-)
-
+# X_train, X_test, y_train, y_test = train_test_split(
+#     data, labels, test_size=0.2, random_state=RANDOM_STATE
+# )
+X_train, X_test, y_train, y_test = data, data, labels, labels
 from sklearn.ensemble import (
     GradientBoostingClassifier,
     RandomForestClassifier,
@@ -79,8 +79,8 @@ from sklearn.svm import SVC
 # clf = AdaBoostClassifier(estimator=base_clf,random_state=RANDOM_STATE, n_estimators=100, algorithm="SAMME")
 
 clf = SVC(random_state=RANDOM_STATE, kernel="rbf")
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
-
+# cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
+cv = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 scores = cross_validate(
     clf,
     X_train,
