@@ -4,10 +4,15 @@ import pickle
 import time
 
 import numpy as np
-from skimage import io, transform, color
+from skimage import color, io, transform
 from skimage.feature import hog, local_binary_pattern
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split,KFold
+from sklearn.model_selection import (
+    KFold,
+    StratifiedKFold,
+    cross_validate,
+    train_test_split,
+)
 
 DATA_DIRECTORY = "data"
 MEN_DIRECTORY = os.path.join(DATA_DIRECTORY, "men")
@@ -23,6 +28,7 @@ t_start = time.process_time_ns()
 data = []
 labels = []
 import utils
+
 with open(LABELS_FILENAME, "r") as f:
     for line in f:
         entry = json.loads(line.strip())
@@ -31,7 +37,7 @@ with open(LABELS_FILENAME, "r") as f:
 
         image = utils.segment_hand(image_path)
         image = transform.rescale(
-            image, 1 / 32, anti_aliasing=True, preserve_range=True
+            image, 1 / 16, anti_aliasing=True, preserve_range=True
         )
 
         # features = local_binary_pattern(image, 8, 1, method="uniform")
@@ -68,10 +74,10 @@ with open("labels.pkl", "wb") as f:
 # )
 X_train, X_test, y_train, y_test = data, data, labels, labels
 from sklearn.ensemble import (
+    AdaBoostClassifier,
+    ExtraTreesClassifier,
     GradientBoostingClassifier,
     RandomForestClassifier,
-    ExtraTreesClassifier,
-    AdaBoostClassifier,
 )
 from sklearn.svm import SVC
 
@@ -89,11 +95,13 @@ scores = cross_validate(
     scoring=("accuracy", "balanced_accuracy"),
 )
 
+
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         return json.JSONEncoder.default(self, obj)
+
 
 with open("scores_playground.json", "w") as f:
     json.dump(scores, f, cls=NumpyEncoder, indent=4)

@@ -1,5 +1,6 @@
 import numpy as np
-from skimage import io, color, filters, morphology
+from skimage import color, filters, io, morphology
+
 
 def segment_hand(path: np.ndarray) -> np.ndarray:
     image = io.imread(path)
