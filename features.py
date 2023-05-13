@@ -69,7 +69,8 @@ def lbp_feature_opencv(gray):
 
 
 def get_features_from_path(path: str) -> np.ndarray:
-    hand = segment_no_shadows(path)
+    img = cv2.imread(path)
+    hand = segment_no_shadows(img)
     resized = cv2.resize(hand, None, fx=1 / 32, fy=1 / 32, interpolation=cv2.INTER_AREA)  # type: ignore
     gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
 
