@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import cv2
+import matplotlib.pyplot as plt
 
 
 def show_cv2_image_bgr(img):

@@ -76,7 +76,7 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-with open("scores_playground_test.json", "w") as f:
+with open("scores_train.json", "w") as f:
     json.dump(scores, f, cls=NumpyEncoder, indent=4)
 
 clf.fit(X_train, y_train)

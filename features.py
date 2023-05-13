@@ -1,8 +1,15 @@
 import cv2
 import numpy as np
-import numpy as np
-from skimage import color, filters, io, measure, morphology, exposure, transform
-from skimage import feature
+from skimage import (
+    color,
+    exposure,
+    feature,
+    filters,
+    io,
+    measure,
+    morphology,
+    transform,
+)
 
 lower = np.array([0, 20, 70])
 upper = np.array([20, 255, 255])
@@ -156,13 +163,15 @@ def get_region_features_from_path(path: str) -> np.ndarray:
 
 def simple_hog_feat(path: str):
     image = io.imread(path)
-    
+
     grayscale = color.rgb2gray(image)
-    
-    corrected = exposure.adjust_gamma(grayscale, gamma=0.5) # type: ignore
-    
-    resized = transform.rescale(corrected, 1 / 24, anti_aliasing=True, preserve_range=True)
-    
+
+    corrected = exposure.adjust_gamma(grayscale, gamma=0.5)  # type: ignore
+
+    resized = transform.rescale(
+        corrected, 1 / 24, anti_aliasing=True, preserve_range=True
+    )
+
     features = feature.hog(
         resized,
         orientations=8,

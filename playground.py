@@ -13,6 +13,7 @@ from sklearn.model_selection import (
     cross_validate,
     train_test_split,
 )
+
 import utils
 
 DATA_DIRECTORY = "data"
@@ -80,7 +81,7 @@ from sklearn.svm import SVC
 # base_clf = SVC(random_state=RANDOM_STATE, kernel="rbf")
 # clf = AdaBoostClassifier(estimator=base_clf,random_state=RANDOM_STATE, n_estimators=100, algorithm="SAMME")
 
-clf = RandomForestClassifier(random_state=RANDOM_STATE)#, kernel="rbf")
+clf = RandomForestClassifier(random_state=RANDOM_STATE)  # , kernel="rbf")
 # cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 cv = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 scores = cross_validate(
