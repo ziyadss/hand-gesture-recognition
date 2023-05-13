@@ -25,9 +25,7 @@ def sgm(img):
     return hand, mask
 
 
-def segment_no_shadows(path: str):
-    img = cv2.imread(path)
-
+def segment_no_shadows(img: np.ndarray) -> np.ndarray:
     hand, mask = sgm(img)
     pixel_values = hand.reshape((-1, 3))
     pixel_values = np.float32(pixel_values)
