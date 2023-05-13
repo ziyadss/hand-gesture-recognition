@@ -14,7 +14,7 @@ with open(MODEL_FILENAME, "rb") as f:
 
 paths = []
 
-data = (get_features_from_path(path) for path in paths)
+data = [get_features_from_path(path) for path in paths]
 
 predictions = clf.predict(data)  # type: ignore
 
