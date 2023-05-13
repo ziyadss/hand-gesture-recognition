@@ -1,0 +1,12 @@
+{
+    "accuracy":{
+        "SVC":0.777032967,
+        "Random Forest":0.7605479452,
+        "KNN":0.7385955141
+    },
+    "balanced_accuracy":{
+        "SVC":0.7797743259,
+        "Random Forest":0.7637312852,
+        "KNN":0.7417376319
+    }
+}
