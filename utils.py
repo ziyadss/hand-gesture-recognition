@@ -25,47 +25,47 @@ def load_data(
     data: list[np.ndarray] = []
     labels: list[int] = []
 
+    with open(LABELS_FILENAME, "r") as f:
+        json_data = json.load(f)
+
     if EXAMPLES_PER_LABEL is None:
         count = 1821
         i = 0
-        with open(LABELS_FILENAME, "r") as f:
-            for line in f:
-                entry = json.loads(line.strip())
-                image_path: str = entry["image_url"]
-                label: int = int(entry["label"])
+        for entry in json_data:
+            image_path: str = entry["path"]
+            label: int = entry["label"]
 
-                features = features_function(image_path)
+            features = features_function(image_path)
 
-                data.append(features)
-                labels.append(label)
+            data.append(features)
+            labels.append(label)
 
-                if i % 50 == 0:
-                    print(f"Loaded {i}/{count} images")
-                i += 1
+            if i % 50 == 0:
+                print(f"Loaded {i}/{count} images")
+            i += 1
     else:
         count = 6 * EXAMPLES_PER_LABEL
         i = 0
         samples_per_class: dict[int, int] = {}
-        with open(LABELS_FILENAME, "r") as f:
-            for line in f:
-                entry = json.loads(line.strip())
-                image_path: str = entry["image_url"]
-                label: int = int(entry["label"])
 
-                if label not in samples_per_class:
-                    samples_per_class[label] = 0
-                if samples_per_class[label] >= EXAMPLES_PER_LABEL:
-                    continue
-                samples_per_class[label] += 1
+        for entry in json_data:
+            image_path: str = entry["image_url"]
+            label: int = entry["label"]
 
-                features = features_function(image_path)
+            if label not in samples_per_class:
+                samples_per_class[label] = 0
+            if samples_per_class[label] >= EXAMPLES_PER_LABEL:
+                continue
+            samples_per_class[label] += 1
 
-                data.append(features)
-                labels.append(label)
+            features = features_function(image_path)
 
-                if i % 50 == 0:
-                    print(f"Loaded {i}/{count} images")
-                i += 1
+            data.append(features)
+            labels.append(label)
+
+            if i % 50 == 0:
+                print(f"Loaded {i}/{count} images")
+            i += 1
     return data, labels
 
 
