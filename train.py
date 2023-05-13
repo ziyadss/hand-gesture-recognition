@@ -29,7 +29,7 @@ else:
     with open(DATA_FILENAME, "rb") as f:
         data, labels = pickle.load(f)
 
-clf = SVC(random_state=RANDOM_STATE, kernel="rbf")
+clf = SVC(random_state=RANDOM_STATE, kernel="rbf", C=10)
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 scores = cross_validate(
