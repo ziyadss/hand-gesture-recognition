@@ -4,12 +4,6 @@ import pickle
 import time
 
 import numpy as np
-from sklearn.ensemble import (
-    AdaBoostClassifier,
-    ExtraTreesClassifier,
-    GradientBoostingClassifier,
-    RandomForestClassifier,
-)
 from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_split
 from sklearn.svm import SVC
 
