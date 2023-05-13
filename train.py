@@ -7,7 +7,7 @@ from sklearn.model_selection import StratifiedKFold, cross_validate, train_test_
 from sklearn.svm import SVC
 
 from constants import *
-from features import get_features_from_path
+from extractor import get_features_from_path
 from utils import NumpyEncoder, load_data
 
 t_start = time.process_time_ns()
