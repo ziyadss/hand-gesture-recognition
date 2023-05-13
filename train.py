@@ -19,11 +19,11 @@ SCORES_FILENAME = "scores_train.json"
 extract_data = FORCE_EXTRACT or not os.path.exists(DATA_FILENAME)
 
 if extract_data:
-    data, labels = load_data(get_features_from_path, EXAMPLES_PER_LABEL)
+    data, labels = load_data(get_features_from_path)
     with open(DATA_FILENAME, "wb") as f:
         pickle.dump((data, labels), f)
 else:
-    with open("train_data.pkl", "rb") as f:
+    with open(DATA_FILENAME, "rb") as f:
         data, labels = pickle.load(f)
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -43,12 +43,12 @@ scores = cross_validate(
 )
 
 
-with open("scores_train.json", "w") as f:
+with open(SCORES_FILENAME, "w") as f:
     json.dump(scores, f, cls=NumpyEncoder, indent=4)
 
 clf.fit(X_train, y_train)
 
-with open("model_train.pkl", "wb") as f:
+with open(MODEL_FILENAME, "wb") as f:
     pickle.dump(clf, f)
 
 accuracy = clf.score(X_test, y_test)

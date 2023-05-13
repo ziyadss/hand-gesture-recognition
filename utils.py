@@ -5,7 +5,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from constants import LABELS_FILENAME
+from constants import EXAMPLES_PER_LABEL, LABELS_FILENAME
 
 
 def show_cv2_image_bgr(img):
@@ -20,7 +20,8 @@ def show_cv2_image_gray(img):
 
 
 def load_data(
-    features_function: Callable[[str], np.ndarray], samples_per_label: int
+    features_function: Callable[[str], np.ndarray],
+    samples_per_label: int = EXAMPLES_PER_LABEL,
 ) -> tuple[list[np.ndarray], list[int]]:
     data: list[np.ndarray] = []
     labels: list[int] = []
