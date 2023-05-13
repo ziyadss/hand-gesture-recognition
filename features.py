@@ -12,18 +12,19 @@ from skimage import (
 )
 
 
-# def gray_world(img):
-#     b, g, r = cv2.split(img)
+def gray_world(img):
+    b, g, r = cv2.split(img)
 
-#     b_avg = np.average(b)
-#     g_avg = np.average(g)
-#     r_avg = np.average(r)
-#     avg = (b_avg + g_avg + r_avg) / 3
+    b_avg = np.average(b)
+    g_avg = np.average(g)
+    r_avg = np.average(r)
+    avg = (b_avg + g_avg + r_avg) / 3
 
-#     b = np.clip(b * (avg / b_avg), 0, 255).astype(np.uint8)
-#     g = np.clip(g * (avg / g_avg), 0, 255).astype(np.uint8)
-#     r = np.clip(r * (avg / r_avg), 0, 255).astype(np.uint8)
-#     return cv2.merge([b, g, r])
+    b = np.clip(b * (avg / b_avg), 0, 255).astype(np.uint8)
+    g = np.clip(g * (avg / g_avg), 0, 255).astype(np.uint8)
+    r = np.clip(r * (avg / r_avg), 0, 255).astype(np.uint8)
+    return cv2.merge([b, g, r])
+
 
 LOWER = np.array([0, 20, 70])
 UPPER = np.array([20, 255, 255])
