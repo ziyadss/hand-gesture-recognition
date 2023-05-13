@@ -11,16 +11,32 @@ from skimage import (
     transform,
 )
 
-lower = np.array([0, 20, 70])
-upper = np.array([20, 255, 255])
-kernel = np.ones((5, 5), np.uint8)
+
+# def gray_world(img):
+#     b, g, r = cv2.split(img)
+
+#     b_avg = np.average(b)
+#     g_avg = np.average(g)
+#     r_avg = np.average(r)
+#     avg = (b_avg + g_avg + r_avg) / 3
+
+#     b = np.clip(b * (avg / b_avg), 0, 255).astype(np.uint8)
+#     g = np.clip(g * (avg / g_avg), 0, 255).astype(np.uint8)
+#     r = np.clip(r * (avg / r_avg), 0, 255).astype(np.uint8)
+#     return cv2.merge([b, g, r])
+
+LOWER = np.array([0, 20, 70])
+UPPER = np.array([20, 255, 255])
+KERNEL = np.ones((5, 5), np.uint8)
 
 
 def sgm(img):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    mask = cv2.inRange(hsv, lower, upper)
-    mask = cv2.erode(mask, kernel, iterations=1)
-    mask = cv2.dilate(mask, kernel, iterations=1)
+    # p_img = gray_world(img)
+    p_img = img
+    hsv = cv2.cvtColor(p_img, cv2.COLOR_BGR2HSV)
+    mask = cv2.inRange(hsv, LOWER, UPPER)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, KERNEL)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, KERNEL)
     hand = cv2.bitwise_and(img, img, mask=mask)
     return hand, mask
 
