@@ -16,9 +16,12 @@ DATA_FILENAME = "data_train.pkl"
 MODEL_FILENAME = "model_train.pkl"
 SCORES_FILENAME = "scores_train.json"
 
-extract_data = FORCE_EXTRACT or not os.path.exists(DATA_FILENAME)
+data_exists = os.path.exists(DATA_FILENAME)
 
-if extract_data:
+if FORCE_EXTRACT or not data_exists:
+    if data_exists:
+        os.rename(DATA_FILENAME, DATA_FILENAME + ".bak")
+
     data, labels = load_data(get_features_from_path)
     with open(DATA_FILENAME, "wb") as f:
         pickle.dump((data, labels), f)
