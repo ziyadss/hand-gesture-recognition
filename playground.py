@@ -13,6 +13,7 @@ from sklearn.model_selection import (
     cross_validate,
     train_test_split,
 )
+import utils
 
 DATA_DIRECTORY = "data"
 MEN_DIRECTORY = os.path.join(DATA_DIRECTORY, "men")
@@ -27,48 +28,47 @@ t_start = time.process_time_ns()
 
 data = []
 labels = []
-import utils
 
-with open(LABELS_FILENAME, "r") as f:
-    for line in f:
-        entry = json.loads(line.strip())
-        image_path = entry["image_url"]
-        label = entry["label"]
+# with open(LABELS_FILENAME, "r") as f:
+#     for line in f:
+#         entry = json.loads(line.strip())
+#         image_path = entry["image_url"]
+#         label = entry["label"]
 
-        hand, region, hull = utils.segment_hand(image_path)
-        bbox = region.bbox
-        image = hand[bbox[0] : bbox[2], bbox[1] : bbox[3]]
+#         hand, region, hull = utils.segment_hand(image_path)
+#         bbox = region.bbox
+#         image = hand[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
-        image = transform.resize(image, (128, 128), preserve_range=True)
+#         image = transform.resize(image, (128, 128), preserve_range=True)
 
-        features = hog(
-            image,
-            orientations=8,
-            pixels_per_cell=(16, 16),
-            cells_per_block=(1, 1),
-            block_norm="L2-Hys",
-            feature_vector=True,
-        )
+#         features = hog(
+#             image,
+#             orientations=8,
+#             pixels_per_cell=(16, 16),
+#             cells_per_block=(1, 1),
+#             block_norm="L2-Hys",
+#             feature_vector=True,
+#         )
 
-        data.append(features)
-        labels.append(label)
+#         data.append(features)
+#         labels.append(label)
 
-with open("data_hog_segmented.pkl", "wb") as f:
-    pickle.dump(data, f)
+# with open("data_hog_segmented.pkl", "wb") as f:
+#     pickle.dump(data, f)
 
-# with open("data_hog_segmented.pkl", "rb") as f:
-#     data = pickle.load(f)
+with open("data_hog_segmented.pkl", "rb") as f:
+    data = pickle.load(f)
 
-with open("labels.pkl", "wb") as f:
-    pickle.dump(labels, f)
+# with open("labels.pkl", "wb") as f:
+#     pickle.dump(labels, f)
 
-# with open("labels.pkl", "rb") as f:
-#     labels = pickle.load(f)
+with open("labels.pkl", "rb") as f:
+    labels = pickle.load(f)
 
-# X_train, X_test, y_train, y_test = train_test_split(
-#     data, labels, test_size=0.2, random_state=RANDOM_STATE
-# )
-X_train, X_test, y_train, y_test = data, data, labels, labels
+X_train, X_test, y_train, y_test = train_test_split(
+    data, labels, test_size=0.2, random_state=RANDOM_STATE
+)
+
 from sklearn.ensemble import (
     AdaBoostClassifier,
     ExtraTreesClassifier,
@@ -80,7 +80,7 @@ from sklearn.svm import SVC
 # base_clf = SVC(random_state=RANDOM_STATE, kernel="rbf")
 # clf = AdaBoostClassifier(estimator=base_clf,random_state=RANDOM_STATE, n_estimators=100, algorithm="SAMME")
 
-clf = SVC(random_state=RANDOM_STATE, kernel="rbf")
+clf = RandomForestClassifier(random_state=RANDOM_STATE)#, kernel="rbf")
 # cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 cv = KFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 scores = cross_validate(
