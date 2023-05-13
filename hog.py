@@ -1,8 +1,8 @@
 import numpy as np
 from scipy import signal
 
-PIXELS_PER_CELL = (4, 4)
-CELLS_PER_BLOCK = (1, 1)
+PIXELS_PER_CELL = (8, 8)
+CELLS_PER_BLOCK = (2, 2)
 NBINS = 9
 
 ORIENTATION_RANGE = 2 * np.pi

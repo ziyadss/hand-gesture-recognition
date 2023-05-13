@@ -21,7 +21,7 @@ LABELS_FILENAME = os.path.join(DATA_DIRECTORY, "labels.jsonl")
 
 RANDOM_STATE = 42
 
-N = 1
+N = 20
 
 t_start = time.process_time_ns()
 
@@ -35,15 +35,11 @@ with open(LABELS_FILENAME, "r") as f:
         image_path = entry["image_url"]
         label = entry["label"]
 
-        image = utils.segment_hand(image_path)
-        image = transform.rescale(
-            image, 1 / 16, anti_aliasing=True, preserve_range=True
-        )
+        hand, region, hull = utils.segment_hand(image_path)
+        bbox = region.bbox
+        image = hand[bbox[0] : bbox[2], bbox[1] : bbox[3]]
 
-        # features = local_binary_pattern(image, 8, 1, method="uniform")
-        # n_bins = int(features.max() + 1)
-        # features, _ = np.histogram(features, bins=n_bins, range=(0, n_bins), density=True)
-        # features = np.zeros((256, 256))
+        image = transform.resize(image, (128, 128), preserve_range=True)
 
         features = hog(
             image,
