@@ -1,5 +1,5 @@
 import json
-from typing import Callable
+from typing import Callable, Optional
 
 import cv2
 import matplotlib.pyplot as plt
@@ -21,27 +21,40 @@ def show_cv2_image_gray(img):
 
 def load_data(
     features_function: Callable[[str], np.ndarray],
-    samples_per_label: int = EXAMPLES_PER_LABEL,
+    samples_per_label: Optional[int] = EXAMPLES_PER_LABEL,
 ) -> tuple[list[np.ndarray], list[int]]:
     data: list[np.ndarray] = []
     labels: list[int] = []
-    samples_per_class: dict[int, int] = {}
-    with open(LABELS_FILENAME, "r") as f:
-        for line in f:
-            entry = json.loads(line.strip())
-            image_path: str = entry["image_url"]
-            label: int = int(entry["label"])
 
-            if label not in samples_per_class:
-                samples_per_class[label] = 0
-            if samples_per_class[label] >= samples_per_label:
-                continue
-            samples_per_class[label] += 1
+    if samples_per_label is None:
+        with open(LABELS_FILENAME, "r") as f:
+            for line in f:
+                entry = json.loads(line.strip())
+                image_path: str = entry["image_url"]
+                label: int = int(entry["label"])
 
-            features = features_function(image_path)
+                features = features_function(image_path)
 
-            data.append(features)
-            labels.append(label)
+                data.append(features)
+                labels.append(label)
+    else:
+        samples_per_class: dict[int, int] = {}
+        with open(LABELS_FILENAME, "r") as f:
+            for line in f:
+                entry = json.loads(line.strip())
+                image_path: str = entry["image_url"]
+                label: int = int(entry["label"])
+
+                if label not in samples_per_class:
+                    samples_per_class[label] = 0
+                if samples_per_class[label] >= samples_per_label:
+                    continue
+                samples_per_class[label] += 1
+
+                features = features_function(image_path)
+
+                data.append(features)
+                labels.append(label)
     return data, labels
 
 
