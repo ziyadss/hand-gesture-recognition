@@ -15,7 +15,8 @@ def get_features_from_path(path: str) -> np.ndarray:
     img = cv2.imread(path)
 
     # Segment hand
-    hand, mask = sgm(img)
+    mask = sgm(img)
+    hand = cv2.bitwise_and(img, img, mask=mask)
 
     # Preprocess image - includes resizing to small enough size for fast extraction
     hand = preprocess(hand)

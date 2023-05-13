@@ -38,12 +38,13 @@ def sgm(img):
     mask = cv2.inRange(hsv, LOWER, UPPER)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, KERNEL)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, KERNEL)
-    hand = cv2.bitwise_and(img, img, mask=mask)
-    return hand, mask
+    return mask
 
 
 def segment_no_shadows(img: np.ndarray) -> np.ndarray:
-    hand, mask = sgm(img)
+    mask = sgm(img)
+    hand = cv2.bitwise_and(img, img, mask=mask)
+
     pixel_values = hand.reshape((-1, 3))
     pixel_values = np.float32(pixel_values)
 
