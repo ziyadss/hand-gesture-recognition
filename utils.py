@@ -49,7 +49,7 @@ def load_data(
         samples_per_class: dict[int, int] = {}
 
         for entry in json_data:
-            image_path: str = entry["image_url"]
+            image_path: str = entry["path"]
             label: int = entry["label"]
 
             if label not in samples_per_class:
