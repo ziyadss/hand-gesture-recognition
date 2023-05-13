@@ -26,6 +26,8 @@ def load_data(
     labels: list[int] = []
 
     if EXAMPLES_PER_LABEL is None:
+        count = 1821
+        i = 0
         with open(LABELS_FILENAME, "r") as f:
             for line in f:
                 entry = json.loads(line.strip())
@@ -36,7 +38,13 @@ def load_data(
 
                 data.append(features)
                 labels.append(label)
+
+                if i % 50 == 0:
+                    print(f"Loaded {i}/{count} images")
+                i += 1
     else:
+        count = 6 * EXAMPLES_PER_LABEL
+        i = 0
         samples_per_class: dict[int, int] = {}
         with open(LABELS_FILENAME, "r") as f:
             for line in f:
@@ -54,6 +62,10 @@ def load_data(
 
                 data.append(features)
                 labels.append(label)
+
+                if i % 50 == 0:
+                    print(f"Loaded {i}/{count} images")
+                i += 1
     return data, labels
 
 
