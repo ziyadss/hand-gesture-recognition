@@ -1,6 +1,6 @@
 import os
 
-FORCE_EXTRACT = False
+FORCE_EXTRACT = True
 
 RANDOM_STATE = 42
 EXAMPLES_PER_LABEL = 20  # None for entire dataset
