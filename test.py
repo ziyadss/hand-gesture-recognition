@@ -16,23 +16,42 @@ if len(sys.argv) != 2:
     sys.exit(1)
 
 folder_path = sys.argv[1]
-paths = [
-    os.path.join(folder_path, file)
-    for file in os.listdir(folder_path)
-    if file.endswith(".jpg") or file.endswith(".JPG")
-]
 
-t_start = time.perf_counter()
+files = sorted(
+    (
+        file
+        for file in os.listdir(folder_path)
+        if file.endswith(".jpg") or file.endswith(".JPG")
+    ),
+    key=lambda x: int(x.split(".")[0]),
+)
 
-data = [get_features_from_path(path) for path in paths]
+paths = [os.path.join(folder_path, file) for file in files]
 
-predictions = clf.predict(data)  # type: ignore
+results = []
+times = []
 
-with open("predictions.csv", "w") as f:
-    for path, prediction in zip(paths, predictions):
-        f.write(f"{path},{prediction}\n")
+for path in paths:
+    t_start = time.perf_counter()
 
-t_end = time.perf_counter()
-seconds = t_end - t_start
+    features = get_features_from_path(path)
 
-print(f"Time: {seconds:.1f} seconds for {len(data)} images")
+    prediction = clf.predict([features])[0]  # type: ignore
+
+    t_end = time.perf_counter()
+
+    seconds = t_end - t_start
+    results.append(prediction)
+    times.append(seconds)
+
+
+with open("results.txt", "w") as f:
+    for r in results:
+        f.write(f"{r}\n")
+
+with open("times.txt", "w") as f:
+    for t in times:
+        f.write(f"{t:.3f}\n")
+
+print("File order:")
+print(files)
