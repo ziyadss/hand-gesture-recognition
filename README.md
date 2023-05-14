@@ -22,4 +22,4 @@ python3 test.py <folder_path>
 ```
 
 where <folder_path> is the path to the folder containing the (JPG format) images to be tested.
-This will output `predictions.csv`, containing the label for each image.
+This will output `results.txt` and `time.txt`.
