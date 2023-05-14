@@ -10,8 +10,7 @@ def singleRetinex(img: np.ndarray, sigma: int) -> np.ndarray:
 def AMSR(img: np.ndarray) -> np.ndarray:
     sigma = [15, 80, 250]
     # calculate the luminence component, Y
-    Y = 0.299 * img[0:, :, :] + 0.587 * \
-        img[:, 0:, :] + 0.114 * img[:, :, 0:]
+    Y = 0.299 * img[0:, :, :] + 0.587 * img[:, 0:, :] + 0.114 * img[:, :, 0:]
 
     Y[np.where(Y == 0)] = 1
 
@@ -21,21 +20,28 @@ def AMSR(img: np.ndarray) -> np.ndarray:
     percentile_1 = [np.percentile(img, 1) for img in R_SSR]
 
     Y_SSR = [np.zeros(img.shape) for img in R_SSR]
-    rounder = np.vectorize(lambda px, p_99, p_1: 255 if px > p_99 else
-                           1 if px < p_1 else 255 * (px - p_1) / (p_99 - p_1)
-                           )
+    rounder = np.vectorize(
+        lambda px, p_99, p_1: 255
+        if px > p_99
+        else 1
+        if px < p_1
+        else 255 * (px - p_1) / (p_99 - p_1)
+    )
 
-    Y_SSR = [rounder(R_SSR, p_99, p_1) for R_SSR, p_99,
-             p_1 in zip(R_SSR, percentile_99, percentile_1)]
+    Y_SSR = [
+        rounder(R_SSR, p_99, p_1)
+        for R_SSR, p_99, p_1 in zip(R_SSR, percentile_99, percentile_1)
+    ]
 
     mu = [32, 96, 160, 224]
     sigma = 32
 
     p0 = np.ones(Y.shape)
-    p1 = np.exp(-(Y - mu[1]) / (2 * sigma**2)) 
-    p2 = np.exp(-(Y - mu[2]) / (2 * sigma**2)) 
-    p3 = np.maximum(np.exp(- Y - mu[3]) / (2 * sigma**2),
-                    np.exp(-(Y - mu[0]) / (2 * sigma**2)))
+    p1 = np.exp(-(Y - mu[1]) / (2 * sigma**2))
+    p2 = np.exp(-(Y - mu[2]) / (2 * sigma**2))
+    p3 = np.maximum(
+        np.exp(-Y - mu[3]) / (2 * sigma**2), np.exp(-(Y - mu[0]) / (2 * sigma**2))
+    )
     probabilites = [p0, p1, p2, p3]
 
     # The weight is the number of times a pixel has occured in the current distribution over the total number of the times
@@ -44,26 +50,47 @@ def AMSR(img: np.ndarray) -> np.ndarray:
     weights = [np.divide(probability, sum_array) for probability in probabilites]
 
     Y_AMSR = np.zeros(img.shape)
-    Y_AMSR = weights[0] * Y + \
-        sum([weight * Y_SSR for weight, Y_SSR in zip(weights[1:], Y_SSR)])
-    
-    maps = [weights[0] * Y, weights[1] * Y_SSR[0], weights[2] * Y_SSR[1], weights[3] * Y_SSR[2]]
+    Y_AMSR = weights[0] * Y + sum(
+        [weight * Y_SSR for weight, Y_SSR in zip(weights[1:], Y_SSR)]
+    )
+
+    maps = [
+        weights[0] * Y,
+        weights[1] * Y_SSR[0],
+        weights[2] * Y_SSR[1],
+        weights[3] * Y_SSR[2],
+    ]
 
     # i = 0
     # for zeft in maps:
     #     zeft = zeft.astype(np.uint8)
     #     io.imsave(str(i), zeft, check_contrast=False, quality=100, format='jpg')
     #     i += 1
-    
-    R_reconstructed = 1/2 * \
-        (np.divide(Y_AMSR, Y) *
-         (np.add(Y[0:, :, :], Y)) + np.subtract(Y[0:, :, :], Y))
-    G_reconstructed = 1/2 * \
-        (np.divide(Y_AMSR, Y) *
-         (np.add(Y[:, 0:, :], Y)) + np.subtract(Y[:, 0:, :], Y))
-    B_reconstructed = 1/2 * \
-        (np.divide(Y_AMSR, Y) *
-         (np.add(Y[:, :, 0:], Y)) + np.subtract(Y[:, :, 0:], Y))
+
+    R_reconstructed = (
+        1
+        / 2
+        * (
+            np.divide(Y_AMSR, Y) * (np.add(Y[0:, :, :], Y))
+            + np.subtract(Y[0:, :, :], Y)
+        )
+    )
+    G_reconstructed = (
+        1
+        / 2
+        * (
+            np.divide(Y_AMSR, Y) * (np.add(Y[:, 0:, :], Y))
+            + np.subtract(Y[:, 0:, :], Y)
+        )
+    )
+    B_reconstructed = (
+        1
+        / 2
+        * (
+            np.divide(Y_AMSR, Y) * (np.add(Y[:, :, 0:], Y))
+            + np.subtract(Y[:, :, 0:], Y)
+        )
+    )
 
     img_reconstructed = np.zeros(img.shape)
     img_reconstructed[0:, :, :] = R_reconstructed
