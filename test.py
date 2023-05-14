@@ -49,7 +49,7 @@ with open("results.txt", "w") as f:
     for r in results:
         f.write(f"{r}\n")
 
-with open("times.txt", "w") as f:
+with open("time.txt", "w") as f:
     for t in times:
         f.write(f"{t:.3f}\n")
 
