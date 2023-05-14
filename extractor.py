@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-from sklearn.decomposition import PCA
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from features import *
 
@@ -29,5 +27,4 @@ def get_features_from_path(path: str) -> np.ndarray:
 
     features = np.concatenate((hog, lbp))
 
-    # return hog
     return features

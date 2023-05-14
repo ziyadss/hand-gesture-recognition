@@ -2,8 +2,6 @@ import json
 import os
 import pickle
 import time
-from sklearn.decomposition import PCA
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.svm import SVC
