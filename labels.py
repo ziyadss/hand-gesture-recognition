@@ -23,7 +23,7 @@ images = []
 
 for directory in directories:
     for label_dir in os.listdir(directory):
-        label = int(label_dir)
+        dir_label = int(label_dir)
 
         label_dir_path = os.path.join(directory, label_dir)
 
@@ -37,9 +37,11 @@ for directory in directories:
                 continue
 
             if image_path in mislabelled_images:
-                label = mislabelled_images[image_path]
+                image_label = mislabelled_images[image_path]
+            else:
+                image_label = dir_label
 
-            image = {"path": image_path, "label": label}
+            image = {"path": image_path, "label": image_label}
 
             images.append(image)
 
