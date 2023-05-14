@@ -14,6 +14,11 @@ corrupted_images = {
     "data/men/2/2_men (107).JPG",
 }
 
+mislabelled_images = {
+    "data/men/3/3_men (83).JPG": 4,
+    "data/men/3/3_men (84).JPG": 4,
+}
+
 images = []
 
 for directory in directories:
@@ -27,6 +32,12 @@ for directory in directories:
 
             if image_path in corrupted_images:
                 continue
+
+            if not image_path.endswith(".jpg") and not image_path.endswith(".JPG"):
+                continue
+
+            if image_path in mislabelled_images:
+                label = mislabelled_images[image_path]
 
             image = {"path": image_path, "label": label}
 
