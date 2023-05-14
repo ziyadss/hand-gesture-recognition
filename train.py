@@ -2,6 +2,8 @@ import json
 import os
 import pickle
 import time
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.svm import SVC
@@ -29,7 +31,7 @@ else:
     with open(DATA_FILENAME, "rb") as f:
         data, labels = pickle.load(f)
 
-clf = SVC(random_state=RANDOM_STATE, kernel="poly", C=1, degree=4)
+clf = SVC(random_state=RANDOM_STATE, kernel="poly", C=9, degree=8)
 
 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_STATE)
 scores = cross_validate(

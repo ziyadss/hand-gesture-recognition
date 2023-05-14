@@ -191,3 +191,74 @@ def simple_hog_feat(path: str):
     )
 
     return features
+
+
+def get_lbp_code(img):
+    center = img[1:-1, 1:-1]
+    binary = (img[:-2, :-2] >= center) * 1
+    binary |= (img[:-2, 1:-1] >= center) * 2
+    binary |= (img[:-2, 2:] >= center) * 4
+    binary |= (img[1:-1, 2:] >= center) * 8
+    binary |= (img[2:, 2:] >= center) * 16
+    binary |= (img[2:, 1:-1] >= center) * 32
+    binary |= (img[2:, :-2] >= center) * 64
+    binary |= (img[1:-1, :-2] >= center) * 128
+    return binary
+
+
+def count_transitions(num):
+    # Circular shift the number one position to the right
+    shifted_num = (num >> 1) | ((num & 1) << 7)
+    # XOR the original number with the shifted number
+    xor_result = num ^ shifted_num
+    # Count the number of 1s in the XOR result
+    return bin(xor_result).count("1")
+
+
+ulbp_58_9_codes = {}
+for i in range(256):
+    if count_transitions(i) <= 2:
+        ulbp_58_9_codes[i] = bin(i).count("1")
+
+
+def get_9ulbp_histogram(gray):
+    lbp_code = get_lbp_code(gray)
+    ulbp_histogram = np.zeros(9, dtype=np.uint32)
+    for ulbp_58_code, ulbp_9_code in ulbp_58_9_codes.items():
+        ulbp_histogram[ulbp_9_code] += np.sum(lbp_code == ulbp_58_code)
+    return ulbp_histogram
+
+def get_9ulbp_features(gray, cell_size):
+    lbp_code = get_lbp_code(gray)
+    height, width = gray.shape
+    cell_height, cell_width = cell_size
+    
+    # Calculate the number of cells in each dimension
+    num_cells_y = height // cell_height
+    num_cells_x = width // cell_width
+    
+    # Initialize the LBP feature vector
+    lbp_features = []
+    
+    # Iterate through the cells
+    for y in range(num_cells_y):
+        for x in range(num_cells_x):
+            # Calculate the cell boundaries
+            y_start, y_end = y * cell_height, (y + 1) * cell_height
+            x_start, x_end = x * cell_width, (x + 1) * cell_width
+            
+            # Extract the cell's LBP code
+            cell_lbp_code = lbp_code[y_start:y_end, x_start:x_end]
+            
+            # Calculate the 9ULBP histogram for the cell
+            ulbp_histogram = np.zeros(9, dtype=np.uint32)
+            for ulbp_58_code, ulbp_9_code in ulbp_58_9_codes.items():
+                ulbp_histogram[ulbp_9_code] += np.sum(cell_lbp_code == ulbp_58_code)
+
+            # Normalize the histogram (L2 norm)
+            ulbp_histogram = ulbp_histogram / np.sqrt(np.sum(ulbp_histogram ** 2))
+
+            # Append the cell's histogram to the LBP feature vector
+            lbp_features.extend(ulbp_histogram)
+
+    return np.array(lbp_features)

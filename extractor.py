@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 from features import *
 
@@ -22,6 +24,10 @@ def get_features_from_path(path: str) -> np.ndarray:
     hand = preprocess(hand)
 
     # Extract features
-    features = hog_feature_opencv(hand)
+    hog = hog_feature_opencv(hand)
+    lbp = get_9ulbp_features(hand, (8, 8))
 
+    features = np.concatenate((hog, lbp))
+
+    # return hog
     return features
