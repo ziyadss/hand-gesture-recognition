@@ -20,7 +20,7 @@ def show_cv2_image_gray(img):
 
 
 def load_data(
-    features_function: Callable[[str], np.ndarray]
+    features_function: Callable[[str], np.ndarray | list[np.ndarray]],
 ) -> tuple[list[np.ndarray], list[int]]:
     data: list[np.ndarray] = []
     labels: list[int] = []
@@ -36,9 +36,12 @@ def load_data(
             label: int = entry["label"]
 
             features = features_function(image_path)
-
-            data.append(features)
-            labels.append(label)
+            if isinstance(features, list):
+                data.extend(features)
+                labels.extend([label] * len(features))
+            else:
+                data.append(features)
+                labels.append(label)
 
             if i % 50 == 0:
                 print(f"Loaded {i}/{count} images")
@@ -59,9 +62,12 @@ def load_data(
             samples_per_class[label] += 1
 
             features = features_function(image_path)
-
-            data.append(features)
-            labels.append(label)
+            if isinstance(features, list):
+                data.extend(features)
+                labels.extend([label] * len(features))
+            else:
+                data.append(features)
+                labels.append(label)
 
             if i % 50 == 0:
                 print(f"Loaded {i}/{count} images")

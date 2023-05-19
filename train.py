@@ -7,7 +7,7 @@ from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.svm import SVC
 
 from constants import FORCE_EXTRACT, RANDOM_STATE
-from extractor import get_features_from_path
+from extractor import get_features_orientations
 from utils import NumpyEncoder, load_data
 
 t_start = time.perf_counter()
@@ -20,9 +20,9 @@ data_exists = os.path.exists(DATA_FILENAME)
 
 if FORCE_EXTRACT or not data_exists:
     if data_exists:
-        os.rename(DATA_FILENAME, DATA_FILENAME + ".bak")
+        os.replace(DATA_FILENAME, DATA_FILENAME + ".bak")
 
-    data, labels = load_data(get_features_from_path)
+    data, labels = load_data(get_features_orientations)
     with open(DATA_FILENAME, "wb") as f:
         pickle.dump((data, labels), f)
 else:
