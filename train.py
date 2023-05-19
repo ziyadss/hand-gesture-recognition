@@ -20,7 +20,7 @@ data_exists = os.path.exists(DATA_FILENAME)
 
 if FORCE_EXTRACT or not data_exists:
     if data_exists:
-        os.rename(DATA_FILENAME, DATA_FILENAME + ".bak")
+        os.replace(DATA_FILENAME, DATA_FILENAME + ".bak")
 
     data, labels = load_data(get_features_from_path)
     with open(DATA_FILENAME, "wb") as f:
